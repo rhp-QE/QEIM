@@ -71,7 +71,7 @@ message LogoutResponse {
 // Note: KeepAliveCmd ---------------------------------
 // Revert : 注释有 Revert 标记的则表明 服务端为请求方，客户端为响应方。 默认情况下客户端为请求方，服务端为响应方
 message KeepAliveRequest {
-  bool Uid = 1;
+  uint64 Uid = 1;
 }
 
 // Revert
@@ -90,7 +90,7 @@ message SendTextMessageRequest {
   //客户端发送的时间
   int64  SendTimeForSender = 3;
   // 发送的具体消息
-  bytes TextMessage = 4;
+  string TextMessage = 4;
 }
 
 message SendTextMessageResponse {
@@ -107,7 +107,7 @@ message SendTextMessageResponse {
 // Note: RegisterCmd ---------------------------------
 message RegisterRequest {
   //用户名
-  bytes UserName = 1;
+  string UserName = 1;
   //密码
   string Password = 2;
 }

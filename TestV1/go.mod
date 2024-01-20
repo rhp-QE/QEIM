@@ -18,6 +18,7 @@ require (
 require (
 	github.com/bytedance/gopkg v0.0.0-20220413063733-65bf48ffb3a7 // indirect
 	github.com/golang/protobuf v1.5.3
+	github.com/google/uuid v1.5.0
 	gorm.io/driver/mysql v1.5.2
 	gorm.io/gorm v1.25.5
 )
