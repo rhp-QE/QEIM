@@ -7,10 +7,10 @@ import (
 	//"go/printer"
 
 	"github.com/cloudwego/netpoll"
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 	"qeim.com/testv1/config"
 	"qeim.com/testv1/log"
-	userpb "qeim.com/testv1/proto/model"
+	userpb "qeim.com/testv1/pb/generate"
 	packet "qeim.com/testv1/transfer_format"
 )
 
@@ -49,7 +49,6 @@ func onNewConnection(connection netpoll.Connection) (ctx context.Context) {
 	logger.Info(connection.RemoteAddr().String())
 	connectionDict[connection.RemoteAddr().String()] = 1
 
-	//connection.AddCloseCallback()
 	return nil
 }
 
@@ -61,14 +60,12 @@ func onMessage(ctx context.Context, connection netpoll.Connection) error {
 		pkgLenReader, e1 := reader.Slice(4)
 		if e1 != nil {
 			println (e1.Error())
-			println("--------------")
 		}
 		pkgLen := packetLen(pkgLenReader)
 		
 		pkgReader, e2 := reader.Slice(int(pkgLen))
 		if e2 != nil {
 			println (e2.Error())
-			println("--------------")
 		}
 
 		connection.RemoteAddr()

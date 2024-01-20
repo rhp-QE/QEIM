@@ -6,7 +6,7 @@ import (
 	"github.com/cloudwego/netpoll"
 	"github.com/golang/protobuf/proto"
 	cofig "qeim.com/testv1/config"
-	userpb "qeim.com/testv1/proto/model"
+	userpb "qeim.com/testv1/pb/generate"
 	packet "qeim.com/testv1/transfer_format"
 )
 

@@ -1,0 +1,125 @@
+syntax = "proto3";
+
+package IMCloudPbMesage; //包名
+
+option go_package = "pb/generate";
+
+
+// NOTE: 
+// 0    ~ 5000  : 为命令消息
+// 5000 ~ 10000 : 具体的消息
+enum Cmd {
+  LoginCmd   = 0;            ///< 登录
+  LogoutCmd  = 1;            ///< 退出   
+  KeepAliveCmd = 2;          ///< 保活命令
+  RegisterCmd  = 3;          ///< 注册命令
+
+  SendTextMessageCmd = 5001;    ///< 发送文本消息
+}
+
+message IMCloudPbMessage {
+  bool IsRequest = 1;
+  Cmd  CmdType   = 2;
+  IMCloudPbMessageRequestBody  requestBody  = 3;
+  IMCloudPbMessageResponseBody responseBody = 4;
+}
+
+message IMCloudPbMessageRequestBody {
+  RegisterRequest        RegisterRequestBody  = 1;
+  LoginRequest           LoginRequestBody     = 2;
+  LogoutRequest          LogoutRequestBody    = 3;
+  KeepAliveRequest       KeepAliveRequestBody = 4;
+  SendTextMessageRequest SendTextMessageRequestBody = 5;
+}
+
+message IMCloudPbMessageResponseBody {
+  RegisterResponse        RegisterResponseBody = 1;
+  LoginResponse           LogoutResponseBody   = 2;
+  LogoutResponse          LoginResponseBody    = 3;
+  KeepAliveResponse       KeepAliveResponseBody = 4;
+  SendTextMessageResponse SendTextMessageResponseBody = 5;
+}
+
+
+// NOTE: LoginCmd  -------------------------------------
+message LoginRequest {
+  uint64 Uid      = 1;
+  string PassWord = 2;
+}
+
+message LoginResponse {
+  bool   Ok          = 1;  ///< 是否登录成功
+  int32  CodeState   = 2;  ///< 状态码
+  string StringState = 3;  ///< 状态码 字符串描述
+}
+//-----------------------------------------------------
+
+
+// Note: LogoutCmd  -----------------------------------
+message LogoutRequest {
+  uint64 Uid = 1;
+}
+
+message LogoutResponse {
+  bool   Ok          = 1;  ///< 是否推出成功
+  int32  CodeState   = 2;  ///< 状态码
+  string StringState = 3;  ///< 状态码 字符串描述
+}
+//-----------------------------------------------------
+
+
+// Note: KeepAliveCmd ---------------------------------
+// Revert : 注释有 Revert 标记的则表明 服务端为请求方，客户端为响应方。 默认情况下客户端为请求方，服务端为响应方
+message KeepAliveRequest {
+  bool Uid = 1;
+}
+
+// Revert
+message KeepAliveResponse {
+  bool isAliving = 1;
+}
+//-----------------------------------------------------
+
+
+// Note: SendTextMessageCmd ---------------------------
+message SendTextMessageRequest {
+  //发送方
+  uint64 SenderUid = 1;
+  //接受方
+  uint64 ReceiverUid = 2;
+  //客户端发送的时间
+  int64  SendTimeForSender = 3;
+  // 发送的具体消息
+  bytes TextMessage = 4;
+}
+
+message SendTextMessageResponse {
+  //是否发送成功
+  bool Ok = 1;
+  //状态码
+  int64 CodeState   = 2;
+  //状态码 字符串描述
+  string StringState = 3;
+}
+//----------------------------------------------------
+
+
+// Note: RegisterCmd ---------------------------------
+message RegisterRequest {
+  //用户名
+  bytes UserName = 1;
+  //密码
+  string Password = 2;
+}
+
+message RegisterResponse {
+  //是否注册成功
+  bool Ok = 1;
+  //状态码
+  int64 CodeState   = 2;
+  //状态码 字符串描述
+  string StringState = 3;
+  //生成的用户id
+  uint64 Uid = 4;
+}
+//---------------------------------------------------
