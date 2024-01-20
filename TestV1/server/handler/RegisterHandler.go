@@ -1,8 +1,9 @@
 package handler
 
 import (
+	"github.com/cloudwego/netpoll"
+	uuidUtil "github.com/google/uuid"
 	pbMessage "qeim.com/testv1/pb/generate"
-	uuidUtil  "github.com/google/uuid"
 )
 
 var (
@@ -14,6 +15,9 @@ var (
 
 	//uid 到密码的映射
 	uidToPassWordDict map[uint64]string = make(map[uint64]string, 0)
+
+	//uid到 con 的映射
+	uidToConnection  map[uint64]netpoll.Connection = make(map[uint64]netpoll.Connection)
 )
 
 func handleRegister(registerRquest *pbMessage.RegisterRequest) *pbMessage.RegisterResponse {
@@ -88,4 +92,10 @@ func saveUser(uid uint64, req *pbMessage.RegisterRequest) bool {
 	uidToUserNameDict[uid] = req.UserName
 	
 	return true
+}
+
+
+func isRegist(uid uint64) bool {
+	_, found := uidToUserNameDict[uid]
+	return found
 }

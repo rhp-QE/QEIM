@@ -10,8 +10,10 @@ import (
 	"google.golang.org/protobuf/proto"
 	"qeim.com/testv1/config"
 	"qeim.com/testv1/log"
-	userpb "qeim.com/testv1/pb/generate"
+	pbMessage "qeim.com/testv1/pb/generate"
 	packet "qeim.com/testv1/transfer_format"
+	pushMessageHandle "qeim.com/testv1/server/handler"
+
 )
 
 //mark const
@@ -57,23 +59,22 @@ func onNewConnection(connection netpoll.Connection) (ctx context.Context) {
 func onMessage(ctx context.Context, connection netpoll.Connection) error {
 	reader := connection.Reader()
 	
-		pkgLenReader, e1 := reader.Slice(4)
-		if e1 != nil {
-			println (e1.Error())
-		}
-		pkgLen := packetLen(pkgLenReader)
-		
-		pkgReader, e2 := reader.Slice(int(pkgLen))
-		if e2 != nil {
-			println (e2.Error())
-		}
+	pkgLenReader, error1 := reader.Slice(4)
+	if error1 != nil {
+		println (error1.Error())
+	}
+	pkgLen := packetLen(pkgLenReader)
+	
+	pkgReader, error2 := reader.Slice(int(pkgLen))
+	if error2 != nil {
+		println (error2.Error())
+	}
 
-		connection.RemoteAddr()
-		uu := connectionDict[connection.RemoteAddr().String()]
-		printAddr(connection)
-		fmt.Printf("user %d, 发来一条新消息。 如下\n", uu)
-		handlePacket(pkgReader)
-		return nil
+	//uu := connectionDict[connection.RemoteAddr().String()]
+	//printAddr(connection)
+	fmt.Printf("user %d, 发来一条新消息。\n", connection)
+	handlePacket(connection, pkgReader)
+	return nil
 }
 
 
@@ -85,20 +86,21 @@ func packetLen(reader netpoll.Reader) uint32 {
 }
 
 
-func handlePacket(reader netpoll.Reader) {
+func handlePacket(con netpoll.Connection, reader netpoll.Reader) {
 	defer reader.Release()
 
 	data, _ := reader.ReadBinary(reader.Len())
 	pushMessage, _ := packet.UnPacket(data)
 
 	if pushMessage.ServiceID == 1 {
-		user := &userpb.Person{}
+		imCloudMessage := &pbMessage.IMCloudPbMessage{}
 
-		proto.Unmarshal(pushMessage.Data, user)
+		proto.Unmarshal(pushMessage.Data, imCloudMessage)
+		imCloudMessageResp := pushMessageHandle.Handle(imCloudMessage, con)
 
-		fmt.Print(user.Name)
-		fmt.Print("  ")
-		fmt.Println(user.Age)
+		dataResp, _ := proto.Marshal(imCloudMessageResp)
+		packet := packet.Packet(dataResp, 1)
+		con.Writer().WriteBinary(packet)
 	}
 }
 

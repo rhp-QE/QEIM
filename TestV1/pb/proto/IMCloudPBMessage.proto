@@ -34,8 +34,8 @@ message IMCloudPbMessageRequestBody {
 
 message IMCloudPbMessageResponseBody {
   RegisterResponse        RegisterResponseBody = 1;
-  LoginResponse           LogoutResponseBody   = 2;
-  LogoutResponse          LoginResponseBody    = 3;
+  LoginResponse           LoginResponseBody   = 2;
+  LogoutResponse          LogoutResponseBody    = 3;
   KeepAliveResponse       KeepAliveResponseBody = 4;
   SendTextMessageResponse SendTextMessageResponseBody = 5;
 }
@@ -44,7 +44,8 @@ message IMCloudPbMessageResponseBody {
 // NOTE: LoginCmd  -------------------------------------
 message LoginRequest {
   uint64 Uid      = 1;
-  string PassWord = 2;
+  string UserName = 2;
+  string PassWord = 3;
 }
 
 message LoginResponse {

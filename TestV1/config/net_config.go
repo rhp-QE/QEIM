@@ -1,7 +1,7 @@
 package config
 
 var NetConfig = &netConfig {
-	Address: "127.0.0.1:4979",
+	Address: "127.0.0.1:1959",
 	NetWork: "tcp",
 }
 

@@ -3,10 +3,10 @@ package main
 import "time"
 import "fmt"
 
-//server "qeim.com/testv1/server"
+import server "qeim.com/testv1/server"
 
 func main() {
-//	server.Serve()
+	server.Serve()
 	now := time.Now();
 	nowInt := uint64(now.Unix())
 	fmt.Println(nowInt)
