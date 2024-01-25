@@ -1,11 +1,11 @@
 package config
 
-var NetConfig = &netConfig {
-	Address: "127.0.0.1:1959",
+var NetConfig = &netConfig{
+	Address: "127.0.0.1:1954",
 	NetWork: "tcp",
 }
 
 type netConfig struct {
-	Address  string
-	NetWork  string
+	Address string
+	NetWork string
 }
