@@ -2,14 +2,14 @@ package handler
 
 import (
 	"github.com/cloudwego/netpoll"
-	pbMessage "qeim.com/testv1/pb/generate"
+	pbMessage "qeim.com/testv1/protobuf/generate"
 )
 
 func Handle(imCloudPbMesage *pbMessage.IMCloudPbMessage, con netpoll.Connection) *pbMessage.IMCloudPbMessage {
 	res := &pbMessage.IMCloudPbMessage{
-		CmdType: imCloudPbMesage.CmdType,
-		IsRequest: !imCloudPbMesage.IsRequest,
-		RequestBody: nil,
+		CmdType:      imCloudPbMesage.CmdType,
+		IsRequest:    !imCloudPbMesage.IsRequest,
+		RequestBody:  nil,
 		ResponseBody: nil,
 	}
 
@@ -21,7 +21,7 @@ func Handle(imCloudPbMesage *pbMessage.IMCloudPbMessage, con netpoll.Connection)
 	}
 
 	if imCloudPbMesage.CmdType == pbMessage.Cmd_LoginCmd {
-		rep := handleLogin(imCloudPbMesage.GetRequestBody().LoginRequestBody, con) 
+		rep := handleLogin(imCloudPbMesage.GetRequestBody().LoginRequestBody, con)
 		res.ResponseBody = &pbMessage.IMCloudPbMessageResponseBody{
 			LoginResponseBody: rep,
 		}

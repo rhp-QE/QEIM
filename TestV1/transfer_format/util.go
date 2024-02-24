@@ -10,11 +10,9 @@ import (
 // 首部固定4字节表示长度
 
 const (
-	modulo       = 65521
-	bufferSize   = 4096
-	kUint32Len   = 4
+	modulo     = 65521
+	kUint32Len = 4
 )
-
 
 func Packet(message []byte, serviceID uint32) []byte {
 
@@ -22,11 +20,11 @@ func Packet(message []byte, serviceID uint32) []byte {
 
 	//fmt.Println(messageLen)
 
-	result := make([]byte, 3*kUint32Len + messageLen)
+	result := make([]byte, 3*kUint32Len+messageLen)
 
 	/// 填充总长度
-	binary.BigEndian.PutUint32(result, uint32(2*kUint32Len + messageLen))
-	
+	binary.BigEndian.PutUint32(result, uint32(2*kUint32Len+messageLen))
+
 	/// 填充 serviceID
 	binary.BigEndian.PutUint32(result[kUint32Len:], serviceID)
 
@@ -34,36 +32,33 @@ func Packet(message []byte, serviceID uint32) []byte {
 	copy(result[2*kUint32Len:], message)
 
 	/// 计算checkSum 并填充
-	checkSum := adler32(result[kUint32Len:2*kUint32Len + messageLen])
-	binary.BigEndian.PutUint32(result[2*kUint32Len + messageLen:], checkSum)
-	
-	return result
-} 
+	checkSum := adler32(result[kUint32Len : 2*kUint32Len+messageLen])
+	binary.BigEndian.PutUint32(result[2*kUint32Len+messageLen:], checkSum)
 
-/// message 就是一个包
+	return result
+}
+
+// / message 就是一个包
 func UnPacket(message []byte) (*PushMessageObject, error) {
 	n := len(message)
 
 	/// 首先检验 checkSun
-	_checkSum := adler32(message[: n - kUint32Len])
-	checkSum := uint32(binary.BigEndian.Uint32(message[n - kUint32Len : ]))
-	if (checkSum != _checkSum) {
+	_checkSum := adler32(message[:n-kUint32Len])
+	checkSum := uint32(binary.BigEndian.Uint32(message[n-kUint32Len:]))
+	if checkSum != _checkSum {
 		return nil, errors.New("数据包checkSum 有问题")
 	}
 	//fmt.Println("-----------------------------")
 	serviceID := uint32(binary.BigEndian.Uint32(message[:kUint32Len]))
 	//fmt.Println("-----------------------------")
-	data := message[kUint32Len : n - kUint32Len]
+	data := message[kUint32Len : n-kUint32Len]
 	//fmt.Println("-----------------------------")
 	return &PushMessageObject{
 		ServiceID: serviceID,
-		Data: data,
-		CheckSum: checkSum,
+		Data:      data,
+		CheckSum:  checkSum,
 	}, nil
 }
-
-
-
 
 //#pramrk - Private
 

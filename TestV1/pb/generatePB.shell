@@ -1,6 +1,0 @@
-#!/bin/bash
-
-rm -rf ./generate/
-protoc --go_out=../ ./proto/IMCloudPBMessage.proto
-
-echo "已生成 IMCloudPBMessage.pb.go 文件"

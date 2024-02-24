@@ -2,15 +2,16 @@ package handler
 
 import (
 	"github.com/cloudwego/netpoll"
-	pbMessage "qeim.com/testv1/pb/generate"
+	pbMessage "qeim.com/testv1/protobuf/generate"
+	"qeim.com/testv1/storage/local"
 )
 
 func handleLogin(req *pbMessage.LoginRequest, con netpoll.Connection) *pbMessage.LoginResponse {
-    // 前置检查
+	// 前置检查
 	if check, str := preCheckLoign(req); check == false {
 		return &pbMessage.LoginResponse{
-			Ok: false,
-			CodeState: 0,
+			Ok:          false,
+			CodeState:   0,
 			StringState: str,
 		}
 	}
@@ -19,8 +20,8 @@ func handleLogin(req *pbMessage.LoginRequest, con netpoll.Connection) *pbMessage
 	uid := userNameToUidDict[req.UserName]
 	if uid == 0 {
 		return &pbMessage.LoginResponse{
-			Ok: false,
-			CodeState: 0,
+			Ok:          false,
+			CodeState:   0,
 			StringState: "[Login Error]:not regist",
 		}
 	}
@@ -29,8 +30,8 @@ func handleLogin(req *pbMessage.LoginRequest, con netpoll.Connection) *pbMessage
 	_, logined := uidToConnection[uid]
 	if logined {
 		return &pbMessage.LoginResponse{
-			Ok: false,
-			CodeState: 0,
+			Ok:          false,
+			CodeState:   0,
 			StringState: "[Login Error]:logined in other place",
 		}
 	}
@@ -38,13 +39,11 @@ func handleLogin(req *pbMessage.LoginRequest, con netpoll.Connection) *pbMessage
 	_ = loginUser(uid, con)
 
 	return &pbMessage.LoginResponse{
-		Ok: true,
-		CodeState: 1,
+		Ok:          true,
+		CodeState:   1,
 		StringState: "[Login] : Login success",
 	}
 }
-
-
 
 func preCheckLoign(req *pbMessage.LoginRequest) (bool, string) {
 	if req == nil {
@@ -62,13 +61,12 @@ func preCheckLoign(req *pbMessage.LoginRequest) (bool, string) {
 	return true, ""
 }
 
-
 func loginUser(uid uint64, con netpoll.Connection) bool {
-	uidToConnection[uid] = con 
+	local.StoreConnection(uid, con)
 	return true
 }
 
 func isLogin(uid uint64) (bool, netpoll.Connection) {
-	con, ok := uidToConnection[uid]
-	return ok, con
+	con := local.ConecntionForUid(uid)
+	return con != nil, con
 }

@@ -3,7 +3,7 @@ package handler
 import (
 	"github.com/cloudwego/netpoll"
 	uuidUtil "github.com/google/uuid"
-	pbMessage "qeim.com/testv1/pb/generate"
+	pbMessage "qeim.com/testv1/protobuf/generate"
 )
 
 var (
@@ -17,12 +17,12 @@ var (
 	uidToPassWordDict map[uint64]string = make(map[uint64]string, 0)
 
 	//uid到 con 的映射
-	uidToConnection  map[uint64]netpoll.Connection = make(map[uint64]netpoll.Connection)
+	uidToConnection map[uint64]netpoll.Connection = make(map[uint64]netpoll.Connection)
 )
 
 func handleRegister(registerRquest *pbMessage.RegisterRequest) *pbMessage.RegisterResponse {
 	//1、前置检查参数是否合法
-	if ok, res := preCheck(registerRquest); ok ==false {
+	if ok, res := preCheck(registerRquest); ok == false {
 		return res
 	}
 
@@ -30,50 +30,48 @@ func handleRegister(registerRquest *pbMessage.RegisterRequest) *pbMessage.Regist
 	localUid := userNameToUidDict[registerRquest.UserName]
 	if localUid != 0 {
 		return &pbMessage.RegisterResponse{
-			Ok: false,
-			CodeState: 0,
+			Ok:          false,
+			CodeState:   0,
 			StringState: "you have registed",
-			Uid: localUid,
+			Uid:         localUid,
 		}
 	}
 
 	localUid = uint64(uuidUtil.New().ID())
-	
+
 	// TODO: 检查是否保存到数据库
 	saveUser(localUid, registerRquest)
 
 	return &pbMessage.RegisterResponse{
-		Ok: true,
-		CodeState: 1,
+		Ok:          true,
+		CodeState:   1,
 		StringState: "register success",
-		Uid: localUid,
+		Uid:         localUid,
 	}
 }
 
-
-
-//前置检查（语言、系统级别）：参数是否合法
+// 前置检查（语言、系统级别）：参数是否合法
 func preCheck(registerRquest *pbMessage.RegisterRequest) (bool, *pbMessage.RegisterResponse) {
 	ok := (registerRquest.Password != "") && (registerRquest.UserName != "")
-	
-	if (registerRquest.UserName == "") {
+
+	if registerRquest.UserName == "" {
 		return ok, &pbMessage.RegisterResponse{
-			Ok: false,
-			CodeState: 0,
+			Ok:          false,
+			CodeState:   0,
 			StringState: "userName can not be emperty!!!",
-			Uid: 0,
+			Uid:         0,
 		}
 	}
 
-	if (registerRquest.Password == "") {
+	if registerRquest.Password == "" {
 		return ok, &pbMessage.RegisterResponse{
-			Ok: false,
-			CodeState: 0,
+			Ok:          false,
+			CodeState:   0,
 			StringState: "password can not be emperty!!!",
-			Uid: 0,
+			Uid:         0,
 		}
 	}
-	
+
 	return ok, nil
 }
 
@@ -90,10 +88,9 @@ func saveUser(uid uint64, req *pbMessage.RegisterRequest) bool {
 	userNameToUidDict[req.UserName] = uid
 	uidToPassWordDict[uid] = req.Password
 	uidToUserNameDict[uid] = req.UserName
-	
+
 	return true
 }
-
 
 func isRegist(uid uint64) bool {
 	_, found := uidToUserNameDict[uid]

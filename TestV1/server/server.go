@@ -10,7 +10,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"qeim.com/testv1/config"
 	"qeim.com/testv1/log"
-	pbMessage "qeim.com/testv1/pb/generate"
+	pbMessage "qeim.com/testv1/protobuf/generate"
 	pushMessageHandle "qeim.com/testv1/server/handler"
 	packet "qeim.com/testv1/transfer_format"
 )
